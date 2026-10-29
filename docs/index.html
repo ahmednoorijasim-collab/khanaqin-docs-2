@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>حِيحاوو</title>
+<meta name="theme-color" content="#1E3A8A">
+<meta name="description" content="مسح المستندات وتحويل الصور إلى PDF ودمج وتقسيم الملفات">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="حِيحاوو">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- الشاشة الرئيسية -->
+<section id="home" class="view active">
+  <header class="hero">
+    <span class="badge">Eng. Ahmed Noori</span>
+    <h1>حِيحاوو</h1>
+    <p>امسح • حوّل • ادمج • قسّم</p>
+  </header>
+  <main class="cards">
+    <button class="card" data-mode="scan"><span class="ico">📷</span><span><b>مسح مستند</b><small>صوّر الصفحات بالكاميرا وحوّلها إلى PDF</small></span></button>
+    <button class="card" data-mode="images"><span class="ico">🖼️</span><span><b>دمج صور في PDF واحد</b><small>اختر عدة صور، كل صورة تصبح صفحة</small></span></button>
+    <button class="card" data-mode="merge"><span class="ico">📎</span><span><b>دمج ملفات PDF</b><small>اختر ملفين أو أكثر ورتّبها</small></span></button>
+    <button class="card" data-mode="split"><span class="ico">✂️</span><span><b>تقسيم PDF</b><small>استخرج صفحات محددة من ملف</small></span></button>
+    <p class="note">كل شيء يتم داخل جهازك، ولا تُرفع ملفاتك إلى أي خادم.</p>
+  </main>
+</section>
+
+<!-- شاشة العمل -->
+<section id="work" class="view">
+  <header class="bar">
+    <button id="back" class="icon-btn" aria-label="رجوع">→</button>
+    <h2 id="workTitle"></h2>
+  </header>
+
+  <div id="listArea">
+    <ul id="items" class="items"></ul>
+    <p id="empty" class="empty"></p>
+  </div>
+
+  <div id="splitArea" class="split-area" hidden>
+    <p id="splitInfo"></p>
+    <label for="range">الصفحات المطلوبة</label>
+    <input id="range" type="text" inputmode="text" placeholder="مثال: 2-4 أو 1,3,5-7" dir="ltr">
+    <small>اكتب أرقام الصفحات، ويمكنك الجمع بينها بفاصلة.</small>
+  </div>
+
+  <div class="actions">
+    <label id="bwRow" class="switch-row">
+      <input id="bw" type="checkbox">
+      <span class="switch"></span>
+      <span>تحويل الصور إلى أبيض وأسود</span>
+    </label>
+    <button id="addBtn" class="btn ghost">+ إضافة</button>
+    <button id="makeBtn" class="btn primary">إنشاء PDF</button>
+  </div>
+</section>
+
+<!-- النتيجة -->
+<div id="result" class="sheet" hidden>
+  <div class="sheet-body">
+    <div class="done">✅</div>
+    <h3>الملف جاهز</h3>
+    <p id="resName" dir="ltr"></p>
+    <p id="resInfo" class="muted"></p>
+    <button id="shareBtn" class="btn primary">مشاركة / حفظ في الملفات</button>
+    <button id="dlBtn" class="btn ghost">تنزيل</button>
+    <button id="viewBtn" class="btn ghost">عرض</button>
+    <button id="closeRes" class="btn text">إغلاق</button>
+  </div>
+</div>
+
+<div id="busy" class="busy" hidden><div class="spin"></div><p id="busyText">جارٍ التنفيذ…</p></div>
+<div id="toast" class="toast" hidden></div>
+
+<input id="inCam" type="file" accept="image/*" capture="environment" hidden>
+<input id="inImgs" type="file" accept="image/*" multiple hidden>
+<input id="inPdfs" type="file" accept="application/pdf,.pdf" multiple hidden>
+<input id="inPdf1" type="file" accept="application/pdf,.pdf" hidden>
+
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

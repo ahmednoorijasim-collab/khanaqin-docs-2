@@ -94,7 +94,21 @@ class MainActivity : AppCompatActivity() {
             setPadding(dp(24), dp(56), dp(24), dp(32))
         }
         header.addView(TextView(this).apply {
-            text = "وثائق خانقين 2"; textSize = 28f; setTextColor(Color.WHITE); setTypeface(null, Typeface.BOLD)
+            text = "Eng. Ahmed Noori"
+            textSize = 11f
+            letterSpacing = 0.12f
+            setTextColor(0xFFFBBF24.toInt())
+            setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC))
+            setPadding(dp(12), dp(4), dp(12), dp(4))
+            background = android.graphics.drawable.GradientDrawable().apply {
+                cornerRadius = dp(20).toFloat()
+                setColor(0x33FFFFFF)
+                setStroke(dp(1), 0x55FBBF24)
+            }
+            layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply { bottomMargin = dp(14) }
+        })
+        header.addView(TextView(this).apply {
+            text = "حِيحاوو"; textSize = 28f; setTextColor(Color.WHITE); setTypeface(null, Typeface.BOLD)
         })
         header.addView(TextView(this).apply {
             text = "امسح • حوّل • ادمج • قسّم"; textSize = 14f
@@ -104,7 +118,7 @@ class MainActivity : AppCompatActivity() {
 
         val list = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(0, dp(12), 0, dp(24)) }
         list.addView(card("📷", "مسح مستند", "الكاميرا مع قص تلقائي وفلاتر") { startScan() })
-        list.addView(card("🖼️", "صور إلى PDF", "اختر صوراً من المعرض") { imagesPicker.launch("image/*") })
+        list.addView(card("🖼️", "دمج صور في PDF واحد", "اختر عدة صور وتتحول إلى ملف واحد، كل صورة صفحة") { imagesPicker.launch("image/*") })
         bw = MaterialSwitch(this).apply {
             text = "تحويل الصور إلى أبيض وأسود"
             setPadding(dp(32), dp(4), dp(32), dp(4))

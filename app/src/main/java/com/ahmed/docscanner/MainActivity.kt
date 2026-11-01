@@ -29,8 +29,17 @@ class MainActivity : AppCompatActivity() {
 
     private val scanLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { r ->
         if (r.resultCode == RESULT_OK) {
-            GmsDocumentScanningResult.fromActivityResultIntent(r.data)?.pdf?.uri?.let { u ->
-                work { val b = contentResolver.openInputStream(u)!!.use { it.readBytes() }; save(b, "scan") }
+            val res = GmsDocumentScanningResult.fromActivityResultIntent(r.data)
+            if (res != null) work {
+                val stamp = System.currentTimeMillis()
+                res.pages?.forEachIndexed { i, pg ->
+                    val b = contentResolver.openInputStream(pg.imageUri)!!.use { it.readBytes() }
+                    saveToGallery(b, "scan_${stamp}_${i + 1}.jpg")
+                }
+                res.pdf?.uri?.let { u ->
+                    val b = contentResolver.openInputStream(u)!!.use { it.readBytes() }
+                    save(b, "scan", "تم الحفظ في الاستوديو (ألبوم حيحاوو) وملف PDF في التنزيلات")
+                }
             }
         }
     }
@@ -132,7 +141,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startScan() {
         val o = GmsDocumentScannerOptions.Builder().setGalleryImportAllowed(true).setPageLimit(30)
-            .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_PDF)
+            .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG, GmsDocumentScannerOptions.RESULT_FORMAT_PDF)
             .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL).build()
         GmsDocumentScanning.getClient(o).getStartScanIntent(this)
             .addOnSuccessListener { scanLauncher.launch(IntentSenderRequest.Builder(it).build()) }
@@ -203,7 +212,20 @@ class MainActivity : AppCompatActivity() {
         save(bos.toByteArray(), name)
     }
 
-    private fun save(bytes: ByteArray, name: String) {
+    private fun saveToGallery(bytes: ByteArray, fileName: String) {
+        val cv = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/حيحاوو")
+            put(MediaStore.Images.Media.IS_PENDING, 1)
+        }
+        val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv)!!
+        contentResolver.openOutputStream(uri)!!.use { it.write(bytes) }
+        cv.clear(); cv.put(MediaStore.Images.Media.IS_PENDING, 0)
+        contentResolver.update(uri, cv, null, null)
+    }
+
+    private fun save(bytes: ByteArray, name: String, msg: String = "تم الحفظ في مجلد التنزيلات") {
         val cv = ContentValues().apply {
             put(MediaStore.Downloads.DISPLAY_NAME, "${name}_${System.currentTimeMillis()}.pdf")
             put(MediaStore.Downloads.MIME_TYPE, "application/pdf")
@@ -212,7 +234,7 @@ class MainActivity : AppCompatActivity() {
         val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, cv)!!
         contentResolver.openOutputStream(uri)!!.use { it.write(bytes) }
         runOnUiThread {
-            toast("تم الحفظ في مجلد التنزيلات")
+            toast(msg)
             startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                 type = "application/pdf"; putExtra(Intent.EXTRA_STREAM, uri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
